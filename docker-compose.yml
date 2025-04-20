@@ -1,0 +1,61 @@
+version: '3.1'
+
+secrets:
+  mysql_root_password:
+    file: ./secrets/mysql_root_password.secret
+  mysql_user:
+    file: ./secrets/mysql_user.secret
+  mysql_password:
+    file: ./secrets/mysql_password.secret
+  mysql_schema:
+    file: ./secrets/mysql_schema.secret
+
+volumes:
+  mysql_data:
+
+services:
+  mysql:
+    image: mysql:9.3.0
+    restart: on-failure
+    volumes:
+      - mysql_data:/var/lib/mysql
+    secrets:
+      - mysql_root_password
+      - mysql_user
+      - mysql_password
+      - mysql_schema
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_USER_FILE: /run/secrets/mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+      MYSQL_DATABASE_FILE: /run/secrets/mysql_schema
+    
+  liferay:
+    depends_on:
+      - mysql
+    build:
+      context: build/docker
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    secrets:
+      - mysql_user
+      - mysql_password
+      - mysql_schema
+    volumes:
+
+# Docker containers are transient. Whenever you reboot a container, all changes on its file system are lost.
+
+# To quickly test changes without building a new image, map the host's file system to the container's file system.
+
+# Start the container with the option -v $(pwd)/xyz123:/mnt/liferay to bridge $(pwd)/xyz123 in the host operating system to /mnt/liferay on the container.
+
+# Files in the host directory $(pwd)/xyz123/files are also available in the container directory /mnt/liferay/files and will be copied to /opt/liferay before Liferay Portal starts.
+
+# For example, if you want to modify Tomcat's setenv.sh file, then place your changes in $(pwd)/xyz123/files/tomcat/bin/setenv.sh and setenv.sh will be overwritten in /opt/liferay/tomcat/bin/setenv.sh before Liferay Portal starts.
+
+# All scripts in the container directory /mnt/liferay/scripts will be executed before before Liferay Portal starts. Place your scripts in $(pwd)/xyz123/scripts.
+
+# Copy files to $(pwd)/xyz123/deploy on the host operating system to deploy modules to Liferay Portal at runtime.
+      - ./liferay:/mnt/liferay
+      
