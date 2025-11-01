@@ -7,6 +7,7 @@ FILE="/opt/liferay/portal-ext.properties"
 
 # Create a temp file to store the updated content
 TMP_FILE=$(mktemp)
+chmod 600 "$TMP_FILE"
 
 # Process the file line by line
 while IFS= read -r line || [[ -n "$line" ]]; do
