@@ -1,7 +1,7 @@
 # Any instructions here will be appended to the end of the Dockerfile created by `createDockerfile`.
 
 USER root
-RUN sed -i.bak -r 's/(archive|security).ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list.d/ubuntu.sources
+# RUN sed -i.bak -r 's/(archive|security).ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list.d/ubuntu.sources
 RUN apt-get update
 RUN apt install software-properties-common -y && apt-add-repository universe && apt-get -y install telnet wget expect
 RUN wget https://github.com/slemarchand/liferay-gogo-scripts/archive/master.zip && unzip master.zip && mkdir -p /opt/liferay-gogo-scripts && cp liferay-gogo-scripts-master/gogo-* /opt/liferay-gogo-scripts && chmod a+x /opt/liferay-gogo-scripts/*

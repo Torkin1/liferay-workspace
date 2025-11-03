@@ -1,0 +1,4 @@
+Bundle-Name: commons-constants
+Bundle-SymbolicName: it.torkin.optimus.common.constants
+Bundle-Version: 1.0.0
+Export-Package: it.torkin.optimus.common.constants.api
