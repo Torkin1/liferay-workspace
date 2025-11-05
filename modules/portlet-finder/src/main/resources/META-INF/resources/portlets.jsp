@@ -3,6 +3,7 @@
 <%@ page import="com.liferay.portal.kernel.model.Portlet" %>
 <%@ page import="it.torkin.optimus.portlet.finder.helpers.WhereIsMyPortletUtil" %>
 <%@ page import="javax.portlet.*" %>
+<%@ page import="com.liferay.portal.kernel.service.PortletLocalServiceUtil" %>
 <%@ include file="./init.jsp" %>
 
 <%
@@ -121,23 +122,6 @@ AUI().ready('aui-io-request', function(A) {
 	});
 });
 
-<c:set var="enableFilters" value="<%= enableFilters %>"></c:set>
-<c:if test="${enableFilters}">
-AUI().use('get', function(A){     
-	A.Get.script('<%=request.getContextPath()%>/js/jquery-1.10.0.min.js', {
-		onSuccess: function(){
-			A.Get.script('<%=request.getContextPath()%>/js/select2.js', {
-			   onSuccess: function(){
-			        $(document).ready(function() { $("#<portlet:namespace/>pageScope").select2(); });
-			        
-			        $(document).ready(function() { $("#<portlet:namespace/>selectedPortlet").select2(); });
-			   }
-			}); 
-		}
-	}); 
-});
-</c:if>
-
 </aui:script>
 
 	<div id="<portlet:namespace/>results">
@@ -170,24 +154,29 @@ AUI().use('get', function(A){
 				
 				<liferay-ui:search-container-column-text
 					name="site-portlets-layout-explore-layout-portlets"
-						value="<%=goToLayoutLinkIcon%>"
+						value="<%=layoutView.getLayout().getName()%>"
 				/>
+
+                <liferay-ui:search-container-column-text
+                        name="Layout Type"
+                        value="<%=layoutView.getLayout().getType()%>"
+                />
 			
 				<liferay-ui:search-container-column-text
 						name="site-portlets-layout-friendlyUrl"
-						value='<%=goToLayoutUrl%>'
+						value='<%=layoutView.getLayout().getFriendlyURL()%>'
 				/>		
 				
 				<liferay-ui:search-container-column-text
 							name="site-portlets-layout-portlets">	
-					<% 
-					for (Portlet layoutPortlet : layoutView.getPortletInstancesForPortletName()) {
-						PortletView portletView = new PortletView(layoutPortlet, layoutView.getLayout());
+					<%
+                        Portlet layoutPortlet = PortletLocalServiceUtil.getPortletById(layoutView.getPortletName());
+                        PortletView portletView = new PortletView(layoutPortlet, layoutView.getLayout());
 					%>
 					<portlet:renderURL var="portletPopUpURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
 				   		<portlet:param name="portletId" value="<%=layoutPortlet.getPortletId()%>"/>
 				   		<portlet:param name="layoutPlid" value="<%=Long.toString(layoutView.getLayout().getPlid())%>"/>
-				   		<portlet:param name="jspPage" value="/html/where-is-my-portlet/portletPopUp.jsp"/>
+				   		<portlet:param name="jspPage" value="/portletPopUp.jsp"/>
 				   	</portlet:renderURL>
 				   	<div>
 					   	<a onClick="javascript:showPortletPopup<%=layoutPortlet.getPortletId()%>('<%= portletPopUpURL %>')" href="#" style="text-decoration: none;">
@@ -217,14 +206,10 @@ AUI().use('get', function(A){
 						  });
 						}
 					</script>
-					<%
-					}
-					%>
 				</liferay-ui:search-container-column-text>		
 				
 				<liferay-ui:search-container-column-text name="actions">		
 					<liferay-ui:icon-menu >
-						<liferay-ui:icon image="view_tasks"  message="goToLayoutsTab" url="<%=showLayoutPortletsFromTableURL.toString() %>" />
 						<liferay-ui:icon image="view_templates" target="_blank" message="goToLayout" url="<%=WhereIsMyPortletUtil.getLayoutUrl(themeDisplay, layoutView.getLayout(), selectedPrivate)%>" />
 					</liferay-ui:icon-menu>
 

@@ -17,8 +17,8 @@ String tabsURL = "/" + tab.trim() + ".jsp";
 %>
 
 <liferay-ui:tabs 
-	names="portlets,layouts" 
-	tabsValues="portlets,layouts" 
+	names="portlets"
+	tabsValues="portlets"
 	param="tab" 
 	url="<%= portletURL %>"/>
  

@@ -3,12 +3,8 @@ package it.torkin.optimus.portlet.finder.portlet.views;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.model.LayoutTypePortlet;
-import com.liferay.portal.kernel.model.Portlet;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
 
 public class LayoutView implements Serializable {
@@ -19,40 +15,40 @@ public class LayoutView implements Serializable {
 	private final Layout layout;
 	private final long layoutId;
 	private final String portletName;
-	
+
 	
 	public String getPortletName() {
-	
+
 		return portletName;
 	}
 
-	public LayoutView(Layout layout, String portletName) {
+	public LayoutView(Layout layout,String portletName) {
 		this.layout = layout;
 		this.layoutId = layout.getLayoutId();
 		this.portletName = portletName;
-	}
+    }
 	
-	public List<Portlet> getPortletInstances() {
-		LayoutTypePortlet layoutTypePortlet = (LayoutTypePortlet) layout.getLayoutType();
-		
-		try {
-			return layoutTypePortlet.getAllPortlets();
-		}
-		catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
-		return null;
-	}
+//	public List<Portlet> getPortletInstances() {
+//		LayoutTypePortlet layoutTypePortlet = (LayoutTypePortlet) layout.getLayoutType();
+//
+//		try {
+//			return layoutTypePortlet.getAllPortlets();
+//		}
+//		catch (Exception e) {
+//			logger.error(e.getMessage(), e);
+//		}
+//		return null;
+//	}
 
-	public List<Portlet> getPortletInstancesForPortletName() {
-		List<Portlet> results = new LinkedList<Portlet>();
-		for (Portlet portlet : getPortletInstances()) {
-			if (portlet.getPortletName().equals(getPortletName())) {
-				results.add(portlet);
-			}
-		}
-		return results;
-	}
+//	public List<Portlet> getPortletInstancesForPortletName() {
+//		List<Portlet> results = new LinkedList<Portlet>();
+//		for (Portlet portlet : getPortletInstances()) {
+//			if (portlet.getPortletName().equals(getPortletName())) {
+//				results.add(portlet);
+//			}
+//		}
+//		return results;
+//	}
 	
 	public long getLayoutId() {
 	
