@@ -16,35 +16,8 @@ public interface PortletFinderCompanyConfiguration {
 
     @Meta.AD(
             required = false,
-            deflt = "true"
+            deflt = "true",
+            description = "If true, PortletFinder will search for portlet occurrences in all Layouts. Set it to false to limit the scope to the current Group."
     )
     boolean ignoreScopeGroupIdFlag();
-
-    @Meta.AD(
-            required = false,
-            deflt = "600"
-    )
-    int popupWidth();
-
-    @Meta.AD(
-            required = false,
-            deflt = "400"
-    )
-    int popupHeight();
-
-    @Meta.AD(
-            required = false,
-            deflt = "false"
-    )
-    boolean enableFilters();
-
-    @Meta.AD(
-            required = false,
-            deflt = "false"
-    )
-    boolean showBaseUrl();
-
-
-
-
 }

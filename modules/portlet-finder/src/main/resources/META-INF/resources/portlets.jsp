@@ -12,11 +12,6 @@
 PortletPreferences prefs = renderRequest.getPreferences();
 PortletFinderCompanyConfiguration companyConfiguration = ConfigurationProviderUtil.getCompanyConfiguration(
         PortletFinderCompanyConfiguration.class, company.getCompanyId());
-int popupWidth = companyConfiguration.popupWidth();
-int popupHeight = companyConfiguration.popupHeight();
-boolean enableFilters = companyConfiguration.enableFilters();
-
-boolean showBaseUrl = companyConfiguration.showBaseUrl();
 boolean selectedPrivate = Boolean.parseBoolean( renderRequest.getParameter("selectedPrivate"));
 
 %>
@@ -165,43 +160,6 @@ AUI().ready('aui-io-request', function(A) {
                     Portlet layoutPortlet = PortletLocalServiceUtil.getPortletById(layoutView.getPortletName());
                     PortletView portletView = new PortletView(layoutPortlet, layoutView.getLayout());
                 %>
-				
-				<liferay-ui:search-container-column-text
-							name="site-portlets-layout-portlets">
-					<portlet:renderURL var="portletPopUpURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
-				   		<portlet:param name="portletId" value="<%=layoutPortlet.getPortletId()%>"/>
-				   		<portlet:param name="layoutPlid" value="<%=Long.toString(layoutView.getLayout().getPlid())%>"/>
-				   		<portlet:param name="jspPage" value="/portletPopUp.jsp"/>
-				   	</portlet:renderURL>
-				   	<div>
-					   	<a onClick="javascript:showPortletPopup<%=layoutPortlet.getPortletId()%>('<%= portletPopUpURL %>')" href="#" style="text-decoration: none;">
-							<img src='<%=request.getContextPath()%>/images/information.png'/>
-						</a>
-						<span>
-							<%= portletView.getPortletBarName(themeDisplay) %>
-						</span>
-						<span style="font-style: italic;">
-							(<%=layoutPortlet.getPortletId() %>)
-						</span>
-				   	</div>
-					<script type="text/javascript">
-						function showPortletPopup<%=layoutPortlet.getPortletId()%>(url) {
-						  AUI().use('aui-dialog', 'aui-io', 'event', 'event-custom', function(A) {
-						    var dialog = new A.Dialog({
-						            title: '<%= portletView.getPortletBarName(themeDisplay) %>',
-								   	height:<%=popupHeight%>,
-								   	width:<%=popupWidth%>,
-						            centered: true,
-						            draggable: true,
-						            destroyOnClose: true,
-						            stack: true,
-						            modal: true
-						        }).plug(A.Plugin.IO, {uri: url}).render();     
-						        dialog.show();     
-						  });
-						}
-					</script>
-				</liferay-ui:search-container-column-text>		
 				
 				<liferay-ui:search-container-column-text name="actions">		
 					<liferay-ui:icon-menu >
