@@ -4,15 +4,19 @@
 <%@ page import="it.torkin.optimus.portlet.finder.helpers.PortletFinderUtil" %>
 <%@ page import="javax.portlet.*" %>
 <%@ page import="com.liferay.portal.kernel.service.PortletLocalServiceUtil" %>
+<%@ page import="it.torkin.optimus.portlet.finder.portlet.configuration.PortletFinderCompanyConfiguration" %>
+<%@ page import="com.liferay.portal.configuration.module.configuration.ConfigurationProviderUtil" %>
 <%@ include file="./init.jsp" %>
 
 <%
 PortletPreferences prefs = renderRequest.getPreferences();
-String popupWidth = prefs.getValue("popupWidth", "400");
-String popupHeight = prefs.getValue("popupHeight", "400");
-boolean enableFilters = Boolean.parseBoolean( prefs.getValue("enableFilters", "true"));
+PortletFinderCompanyConfiguration companyConfiguration = ConfigurationProviderUtil.getCompanyConfiguration(
+        PortletFinderCompanyConfiguration.class, company.getCompanyId());
+int popupWidth = companyConfiguration.popupWidth();
+int popupHeight = companyConfiguration.popupHeight();
+boolean enableFilters = companyConfiguration.enableFilters();
 
-boolean showBaseUrl = Boolean.parseBoolean(prefs.getValue("showBaseUrl", "false"));		
+boolean showBaseUrl = companyConfiguration.showBaseUrl();
 boolean selectedPrivate = Boolean.parseBoolean( renderRequest.getParameter("selectedPrivate"));
 
 %>

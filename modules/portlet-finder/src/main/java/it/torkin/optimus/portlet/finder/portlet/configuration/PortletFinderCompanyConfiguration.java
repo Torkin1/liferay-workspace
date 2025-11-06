@@ -20,7 +20,29 @@ public interface PortletFinderCompanyConfiguration {
     )
     boolean ignoreScopeGroupIdFlag();
 
+    @Meta.AD(
+            required = false,
+            deflt = "600"
+    )
+    int popupWidth();
 
+    @Meta.AD(
+            required = false,
+            deflt = "400"
+    )
+    int popupHeight();
+
+    @Meta.AD(
+            required = false,
+            deflt = "false"
+    )
+    boolean enableFilters();
+
+    @Meta.AD(
+            required = false,
+            deflt = "false"
+    )
+    boolean showBaseUrl();
 
 
 
