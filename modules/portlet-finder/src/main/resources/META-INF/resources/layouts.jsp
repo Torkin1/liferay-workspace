@@ -1,6 +1,6 @@
 <%@ page import="javax.portlet.*" %>
 <%@ page import="com.liferay.portal.kernel.model.Layout" %>
-<%@ page import="it.torkin.optimus.portlet.finder.helpers.WhereIsMyPortletUtil" %>
+<%@ page import="it.torkin.optimus.portlet.finder.helpers.PortletFinderUtil" %>
 <%@ include file="./init.jsp" %>
 <%
 PortletPreferences prefs = renderRequest.getPreferences();
@@ -38,7 +38,7 @@ String noIcon = request.getContextPath() + "/images/cross.png";
 				if (allLayouts!=null) {
 					for (Layout l : allLayouts) {
 			%>
-					<aui:option selected="<%=String.valueOf(l.getPlid()).equals(selectedLayout) ? true : false%>" value="<%=l.getPlid()%>"><%=WhereIsMyPortletUtil.getLayoutHREF(l, themeDisplay, selectedPrivate)%> - <%=l.getName(themeDisplay.getLocale())%></aui:option>
+					<aui:option selected="<%=String.valueOf(l.getPlid()).equals(selectedLayout) ? true : false%>" value="<%=l.getPlid()%>"><%=PortletFinderUtil.getLayoutHREF(l, themeDisplay, selectedPrivate)%> - <%=l.getName(themeDisplay.getLocale())%></aui:option>
 			<%
 				}
 			}
@@ -76,7 +76,7 @@ function submitLayoutsForm() {
 		<%
 		String goToLayoutLinkIcon = "<a title='Find out on which pages this portlet is...' class='tooltip' href='" + showPortletLayoutsFromTableURL + "'><img src='" + request.getContextPath() + "/images/application_go.png'/> " + portlet.getPortlet().getDisplayName() + " </a>";
 		String portletNameBar = portlet.getPortletBarName(themeDisplay);
-		String iconUrl = WhereIsMyPortletUtil.getIconUrl(portlet.getPortlet());
+		String iconUrl = PortletFinderUtil.getIconUrl(portlet.getPortlet());
 		%>
 		
 			<liferay-ui:search-container-column-text name="site-portlets-portlet-id">

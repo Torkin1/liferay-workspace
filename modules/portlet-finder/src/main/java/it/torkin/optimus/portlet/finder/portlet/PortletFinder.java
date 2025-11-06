@@ -14,7 +14,7 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import it.torkin.optimus.portlet.finder.constants.PortletFinderPortletKeys;
-import it.torkin.optimus.portlet.finder.helpers.WhereIsMyPortletUtil;
+import it.torkin.optimus.portlet.finder.helpers.PortletFinderUtil;
 import it.torkin.optimus.portlet.finder.portlet.views.LayoutView;
 import org.osgi.service.component.annotations.Component;
 
@@ -75,7 +75,7 @@ public final class PortletFinder extends MVCPortlet {
 			switch(action) {
 			case ACTION_PAGE_SCOPE_PORTLETS:
 				
-				SortedMap<String, String> portletNames = WhereIsMyPortletUtil.getSortedPortletNames(request);
+				SortedMap<String, String> portletNames = PortletFinderUtil.getSortedPortletNames(request);
 				
 				for (String portletName : portletNames.keySet()) {
 					JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
@@ -133,7 +133,7 @@ public final class PortletFinder extends MVCPortlet {
 		}
 		
 		if (!searchDone && tab.equals(TAB_PORTLETS)) {
-			List<LayoutView> layouts = WhereIsMyPortletUtil.findLayoutsFromSelectedPortlet(request, selectedPrivate, null);
+			List<LayoutView> layouts = PortletFinderUtil.findLayoutsFromSelectedPortlet(request, selectedPrivate, null);
 			request.setAttribute(ATTRIBUTE_PORTLET_LAYOUTS, layouts);
 			request.setAttribute(ATTRIBUTE_PORTLET_LAYOUTS_SIZE, layouts.size());
 			
@@ -155,7 +155,7 @@ public final class PortletFinder extends MVCPortlet {
 			logger.debug("selectedPrivate: " + selectedPrivate);
 		}
 		
-		List<LayoutView> layouts = WhereIsMyPortletUtil.findLayoutsFromSelectedPortlet(actionRequest, selectedPrivate, selectedPortlet);
+		List<LayoutView> layouts = PortletFinderUtil.findLayoutsFromSelectedPortlet(actionRequest, selectedPrivate, selectedPortlet);
 		
 		actionRequest.setAttribute("selectedPrivate", selectedPrivate);
 		actionRequest.setAttribute("selectedPortlet", selectedPortlet);

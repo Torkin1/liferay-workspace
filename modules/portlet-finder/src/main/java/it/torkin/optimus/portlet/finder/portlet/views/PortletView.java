@@ -12,7 +12,7 @@ import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PortalUtil;
-import it.torkin.optimus.portlet.finder.helpers.WhereIsMyPortletUtil;
+import it.torkin.optimus.portlet.finder.helpers.PortletFinderUtil;
 
 import java.io.Serializable;
 import java.util.List;
@@ -55,7 +55,7 @@ public class PortletView implements Serializable {
 	public String getPortletBarName(ThemeDisplay themeDisplay) {
 		String result = "";
 		try {
-			result = WhereIsMyPortletUtil.getPortletTitleBarName(themeDisplay, getPortlet().getPortletId(), getPortlet().getDisplayName(), getLayout().getPlid());
+			result = PortletFinderUtil.getPortletTitleBarName(themeDisplay, getPortlet().getPortletId(), getPortlet().getDisplayName(), getLayout().getPlid());
 		}
 		catch (SystemException e) {
 			logger.error(e.getMessage(), e);

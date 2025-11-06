@@ -4,7 +4,7 @@
 <%@ page import="com.liferay.portal.kernel.model.Layout" %>
 <%@ page import="com.liferay.portal.kernel.service.LayoutLocalServiceUtil" %>
 <%@ page import="com.liferay.portal.kernel.util.*" %>
-<%@ page import="it.torkin.optimus.portlet.finder.helpers.WhereIsMyPortletUtil" %>
+<%@ page import="it.torkin.optimus.portlet.finder.helpers.PortletFinderUtil" %>
 <%@ page import="it.torkin.optimus.portlet.finder.portlet.views.PortletView" %>
 <%@ page import="com.liferay.portal.kernel.model.PortletPreferences" %>
 <%@ page import="com.liferay.portal.kernel.model.PublicRenderParameter" %>
@@ -17,7 +17,7 @@ Long popupLayoutPlid = ParamUtil.getLong(renderRequest, "layoutPlid");
 Portlet popupPortlet = PortletLocalServiceUtil.getPortletById(themeDisplay.getCompanyId(), popupPortletId);
 Layout popupLayout = LayoutLocalServiceUtil.getLayout(popupLayoutPlid);
 long portletPlid = PortalUtil.getPlidFromPortletId(themeDisplay.getScopeGroupId(), popupPortlet.getPortletId());
-String portletBarName = WhereIsMyPortletUtil.getPortletTitleBarName(themeDisplay, popupPortlet.getPortletId(), popupPortlet.getDisplayName(), portletPlid);
+String portletBarName = PortletFinderUtil.getPortletTitleBarName(themeDisplay, popupPortlet.getPortletId(), popupPortlet.getDisplayName(), portletPlid);
 PortletView portletView = new PortletView(popupPortlet, popupLayout);
 %>
 

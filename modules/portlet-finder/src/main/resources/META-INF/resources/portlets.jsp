@@ -1,7 +1,7 @@
 <%@ page import="it.torkin.optimus.portlet.finder.helpers.Constants" %>
 <%@ page import="it.torkin.optimus.portlet.finder.portlet.views.PortletView" %>
 <%@ page import="com.liferay.portal.kernel.model.Portlet" %>
-<%@ page import="it.torkin.optimus.portlet.finder.helpers.WhereIsMyPortletUtil" %>
+<%@ page import="it.torkin.optimus.portlet.finder.helpers.PortletFinderUtil" %>
 <%@ page import="javax.portlet.*" %>
 <%@ page import="com.liferay.portal.kernel.service.PortletLocalServiceUtil" %>
 <%@ include file="./init.jsp" %>
@@ -143,7 +143,7 @@ AUI().ready('aui-io-request', function(A) {
 								request.getContextPath() + "/images/application_go.png'/> " + 
 								layoutView.getLayout().getName(themeDisplay.getLocale()) + " </a>";
 								
-				String goToLayoutUrl = WhereIsMyPortletUtil.getLayoutHREF(layoutView.getLayout(), themeDisplay, true, "Go to this portal page...", "tooltip", showBaseUrl, selectedPrivate);
+				String goToLayoutUrl = PortletFinderUtil.getLayoutHREF(layoutView.getLayout(), themeDisplay, true, "Go to this portal page...", "tooltip", showBaseUrl, selectedPrivate);
 
 				%>
 				
@@ -210,7 +210,7 @@ AUI().ready('aui-io-request', function(A) {
 				
 				<liferay-ui:search-container-column-text name="actions">		
 					<liferay-ui:icon-menu >
-						<liferay-ui:icon image="view_templates" target="_blank" message="goToLayout" url="<%=WhereIsMyPortletUtil.getLayoutUrl(themeDisplay, layoutView.getLayout(), selectedPrivate)%>" />
+						<liferay-ui:icon image="view_templates" target="_blank" message="goToLayout" url="<%=PortletFinderUtil.getLayoutUrl(themeDisplay, layoutView.getLayout(), selectedPrivate)%>" />
 					</liferay-ui:icon-menu>
 
 				</liferay-ui:search-container-column-text>

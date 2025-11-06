@@ -34,9 +34,9 @@ import javax.portlet.PortletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class WhereIsMyPortletUtil implements Constants {
+public class PortletFinderUtil implements Constants {
 
-	private static final Log logger = LogFactoryUtil.getLog(WhereIsMyPortletUtil.class);
+	private static final Log logger = LogFactoryUtil.getLog(PortletFinderUtil.class);
 	
 	public static String getLayoutHREF(Layout layout, ThemeDisplay themeDisplay, boolean privatePage) {
 
