@@ -147,12 +147,12 @@ AUI().ready('aui-io-request', function(A) {
 				/>
 				
 				<liferay-ui:search-container-column-text
-					name="site-portlets-layout-explore-layout-portlets"
-						value="<%=layoutView.getLayout().getName()%>"
+					name="Group Key"
+						value="<%=layoutView.getLayout().getGroup().getGroupKey()%>"
 				/>
 
                 <liferay-ui:search-container-column-text
-                        name="Layout Type"
+                        name="Type"
                         value="<%=layoutView.getLayout().getType()%>"
                 />
 			
