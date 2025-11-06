@@ -5,3 +5,4 @@ Export-Package: it.torkin.optimus.portlet.finder.constants
 Provide-Capability:\
 	liferay.language.resources;\
 		resource.bundle.base.name="content.Language"
+-metatype: *

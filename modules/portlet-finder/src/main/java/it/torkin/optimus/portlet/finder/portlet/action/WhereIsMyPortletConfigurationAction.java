@@ -13,6 +13,8 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class WhereIsMyPortletConfigurationAction extends DefaultConfigurationAction implements ConfigurationAction {
 
@@ -35,11 +37,5 @@ public class WhereIsMyPortletConfigurationAction extends DefaultConfigurationAct
 
 		super.processAction(portletConfig, actionRequest, actionResponse);
 
-	}
-
-	public String render(PortletConfig arg0, RenderRequest arg1, RenderResponse arg2)
-		throws Exception {
-
-		return "/html/where-is-my-portlet/config.jsp";
 	}
 }

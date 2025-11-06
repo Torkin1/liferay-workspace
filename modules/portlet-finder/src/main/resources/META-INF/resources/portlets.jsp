@@ -137,16 +137,6 @@ AUI().ready('aui-io-request', function(A) {
 					<portlet:param name="selectedPrivate" value="${selectedPrivate}"/>
 				</portlet:actionURL>
 				
-				<%
-			
-				String goToLayoutLinkIcon = "<a title='List the portlets of this page...' class='tooltip' href='" + showLayoutPortletsFromTableURL + "'><img src='" +
-								request.getContextPath() + "/images/application_go.png'/> " + 
-								layoutView.getLayout().getName(themeDisplay.getLocale()) + " </a>";
-								
-				String goToLayoutUrl = PortletFinderUtil.getLayoutHREF(layoutView.getLayout(), themeDisplay, true, "Go to this portal page...", "tooltip", showBaseUrl, selectedPrivate);
-
-				%>
-				
 				<liferay-ui:search-container-column-text
 					name="site-portlets-layout-id"
 						value="<%=String.valueOf(layoutView.getLayout().getLayoutId())%>"
@@ -165,14 +155,15 @@ AUI().ready('aui-io-request', function(A) {
 				<liferay-ui:search-container-column-text
 						name="site-portlets-layout-friendlyUrl"
 						value='<%=layoutView.getLayout().getFriendlyURL()%>'
-				/>		
+				/>
+
+                <%
+                    Portlet layoutPortlet = PortletLocalServiceUtil.getPortletById(layoutView.getPortletName());
+                    PortletView portletView = new PortletView(layoutPortlet, layoutView.getLayout());
+                %>
 				
 				<liferay-ui:search-container-column-text
-							name="site-portlets-layout-portlets">	
-					<%
-                        Portlet layoutPortlet = PortletLocalServiceUtil.getPortletById(layoutView.getPortletName());
-                        PortletView portletView = new PortletView(layoutPortlet, layoutView.getLayout());
-					%>
+							name="site-portlets-layout-portlets">
 					<portlet:renderURL var="portletPopUpURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>">
 				   		<portlet:param name="portletId" value="<%=layoutPortlet.getPortletId()%>"/>
 				   		<portlet:param name="layoutPlid" value="<%=Long.toString(layoutView.getLayout().getPlid())%>"/>
@@ -210,7 +201,7 @@ AUI().ready('aui-io-request', function(A) {
 				
 				<liferay-ui:search-container-column-text name="actions">		
 					<liferay-ui:icon-menu >
-						<liferay-ui:icon image="view_templates" target="_blank" message="goToLayout" url="<%=PortletFinderUtil.getLayoutUrl(themeDisplay, layoutView.getLayout(), selectedPrivate)%>" />
+						<liferay-ui:icon image="view_templates" target="_blank" message="goToLayout" url="<%=PortletFinderUtil.getLayoutUrl(renderRequest, layoutView.getLayout(), layoutPortlet, selectedPrivate)%>" />
 					</liferay-ui:icon-menu>
 
 				</liferay-ui:search-container-column-text>

@@ -45,6 +45,7 @@ import static it.torkin.optimus.portlet.finder.helpers.Constants.*;
                 "javax.portlet.init-param.view-template=/view.jsp",
                 "javax.portlet.name=" + PortletFinderPortletKeys.PORTLETFINDER,
                 "javax.portlet.resource-bundle=content.Language",
+                "javax.portlet.version=3.0",
                 "javax.portlet.security-role-ref=power-user,user",
 
         },

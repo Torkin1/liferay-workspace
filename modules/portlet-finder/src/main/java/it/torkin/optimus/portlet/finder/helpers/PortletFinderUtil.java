@@ -7,6 +7,7 @@ import com.liferay.layout.page.template.model.LayoutPageTemplateStructureRel;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalServiceUtil;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureRelLocalServiceUtil;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.configuration.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -16,6 +17,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.*;
+import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
@@ -28,6 +30,7 @@ import com.liferay.portal.kernel.xml.DocumentException;
 import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.segments.service.SegmentsExperienceLocalServiceUtil;
+import it.torkin.optimus.portlet.finder.portlet.configuration.PortletFinderCompanyConfiguration;
 import it.torkin.optimus.portlet.finder.portlet.views.LayoutView;
 
 import javax.portlet.PortletRequest;
@@ -37,57 +40,10 @@ import java.util.stream.Collectors;
 public class PortletFinderUtil implements Constants {
 
 	private static final Log logger = LogFactoryUtil.getLog(PortletFinderUtil.class);
-	
-	public static String getLayoutHREF(Layout layout, ThemeDisplay themeDisplay, boolean privatePage) {
 
+	public static String getLayoutUrl(PortletRequest request, Layout layout, Portlet layoutPortlet, boolean privatePage) {
 
-		return getLayoutHREF(layout, themeDisplay, false, privatePage);
-	}
-	
-	public static String getLayoutHREF(Layout layout, ThemeDisplay themeDisplay, boolean openInNewPage, boolean privatePage) {
-
-
-		return getLayoutHREF(layout, themeDisplay, openInNewPage, null, null, false, privatePage);
-	}
-	
-	public static String getLayoutHREF(Layout layout, ThemeDisplay themeDisplay, boolean openInNewPage, String title, String className, boolean showBaseUrl, boolean privatePage) {
-
-		String url = "";
-		url = "<a ";
-		url += openInNewPage?"target=\"_blank\" ":"";
-		if (Validator.isNotNull(title)) {
-			url += openInNewPage?"title=\"" + title + "\" ":"";
-		}
-		if (Validator.isNotNull(className)) {
-			url += openInNewPage?"class=\"" + className + "\" ":"";
-		}
-		url += "href=\"";
-		url += getBaseUrl(themeDisplay, layout, privatePage) + layout.getFriendlyURL();
-		url += "\">";
-		if (showBaseUrl) {
-			url += getBaseUrl(themeDisplay, layout, privatePage) + layout.getFriendlyURL();
-		}
-		else {
-			url += layout.getFriendlyURL();
-		}
-		url += "</a>";
-		return url;
-	}
-	
-	public static String getBaseUrl(ThemeDisplay themeDisplay, Layout layout, boolean privatePage) {
-
-		return getUrl(themeDisplay, layout, false, privatePage);
-	}
-
-	public static String getLayoutUrl(ThemeDisplay themeDisplay, Layout layout, boolean privatePage) {
-
-		return getUrl(themeDisplay, layout, true, privatePage);
-	}
-
-	public static String getLayoutUrl(ThemeDisplay themeDisplay, long layoutId, boolean privatePage)
-		throws PortalException, SystemException {
-
-		return getUrl(themeDisplay, LayoutLocalServiceUtil.getLayout(themeDisplay.getScopeGroupId(), false, layoutId), true, privatePage);
+		return getUrl(request, layout, layoutPortlet, true, privatePage);
 	}
 
     private static String _getVirtualHostName(Layout layout) {
@@ -100,7 +56,19 @@ public class PortletFinderUtil implements Constants {
 
     }
 
-	public static String getUrl(ThemeDisplay themeDisplay, Layout layout, boolean appendLayoutUrl, boolean privatePage) {
+	private static String _getControlPanelPortletUrl(PortletRequest request, Portlet layoutPortlet){
+		return PortalUtil.getControlPanelPortletURL(request, layoutPortlet.getPortletId(), PortletRequest.RENDER_PHASE)
+			.toString();
+	}
+
+	public static String getUrl(PortletRequest request, Layout layout, Portlet layoutPortlet, boolean appendLayoutUrl, boolean privatePage) {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+
+		// handle panel apps separately
+		if (StringUtil.equals(layout.getType(), LayoutConstants.TYPE_CONTROL_PANEL)) {
+			return _getControlPanelPortletUrl(request, layoutPortlet);
+		}
 
 		StringBundler url = new StringBundler();
 
@@ -274,7 +242,16 @@ public class PortletFinderUtil implements Constants {
 
     }
 
-    private static Map<String, String> _getLayoutPortletNames(Layout layout) {
+	private static Map<String, String> _getControlPanelLayoutPortletNames(Layout layout){
+
+		// all portlets which are also panel apps must have a control panel category
+		return PortletLocalServiceUtil.getPortlets().stream()
+			.filter(p -> Validator.isNotNull(p.getControlPanelEntryCategory()))
+			.collect(Collectors.toMap(Portlet::getPortletName, Portlet::getDisplayName));
+
+	}
+
+		private static Map<String, String> _getLayoutPortletNames(Layout layout) {
         Map<String, String> portletNames;
 
         switch (layout.getType()) {
@@ -284,8 +261,9 @@ public class PortletFinderUtil implements Constants {
             case LayoutConstants.TYPE_CONTENT:
                 portletNames = _getContentLayoutPortletNames(layout);
                 break;
-            case LayoutConstants.TYPE_PANEL:
-                // TODO: research how portlets are linked to panel apps.
+            case LayoutConstants.TYPE_CONTROL_PANEL:
+				portletNames = _getControlPanelLayoutPortletNames(layout);
+				break;
             default:
                 logger.warn("Unsupported layout type: " + layout.getType());
                 portletNames = new HashMap<>();
@@ -337,7 +315,7 @@ public class PortletFinderUtil implements Constants {
                 portletName = ParamUtil.getString(request, ATTRIBUTE_SELECTED_PORTLET);
             }
 
-            List<Layout> layouts = getLayoutsContainingPortlet(allLayouts, portletName);
+            List<Layout> layouts = _getLayoutsContainingPortlet(allLayouts, portletName);
 			results = wrapInView(layouts, portletName);
 		}
 		catch (SystemException e) {
@@ -380,12 +358,16 @@ public class PortletFinderUtil implements Constants {
 	 */
 	private static boolean getIgnoreScopeGroupIdFlag(PortletRequest request) {
 
-		javax.portlet.PortletPreferences prefs = request.getPreferences();
-		boolean ignoreScopeGroupIdFlag = Boolean.parseBoolean(prefs.getValue(PREFERENCE_IGNORE_SCOPE_GROUP_ID, "false"));
-		return ignoreScopeGroupIdFlag;
-	}
+        try {
+            long companyId = ((ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY)).getCompanyId();
+            PortletFinderCompanyConfiguration companyConfiguration = ConfigurationProviderUtil.getCompanyConfiguration(PortletFinderCompanyConfiguration.class, companyId);
+            return companyConfiguration.ignoreScopeGroupIdFlag();
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 	
-	private static List<Layout> getLayoutsContainingPortlet(List<Layout> layouts, String portletName) {
+	private static List<Layout> _getLayoutsContainingPortlet(List<Layout> layouts, String portletName) {
 		List<Layout> results = new LinkedList<Layout>();
 		
 		if (logger.isDebugEnabled()) logger.debug("FILTERING LAYOUTS BY PORTLET NAME:" + portletName);
