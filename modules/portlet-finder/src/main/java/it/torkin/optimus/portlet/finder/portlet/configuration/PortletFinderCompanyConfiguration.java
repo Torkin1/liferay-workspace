@@ -17,7 +17,15 @@ public interface PortletFinderCompanyConfiguration {
     @Meta.AD(
             required = false,
             deflt = "true",
-            description = "If true, PortletFinder will search for portlet occurrences in all Layouts. Set it to false to limit the scope to the current Group."
+            description = "If true, PortletFinder will search for portlet occurrences in all Layouts. Set it to false to limit the scope to the current site."
     )
     boolean ignoreScopeGroupIdFlag();
+
+    @Meta.AD(
+            required = false,
+            deflt = "true",
+            description = "If true and ignoreScopeGroupIdFlag is true, PortletFinder will search for portlet occurrences only in the layouts belonging to a site and in the Control Panel."
+    )
+    boolean restrictScopeToSitesAndControlPanel();
+
 }

@@ -18,10 +18,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.*;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
-import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
-import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
-import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
-import com.liferay.portal.kernel.service.VirtualHostLocalServiceUtil;
+import com.liferay.portal.kernel.service.*;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.*;
 import com.liferay.portal.kernel.util.comparator.LayoutComparator;
@@ -331,19 +328,40 @@ public class PortletFinderUtil implements Constants {
 	private static List<Layout> getLayouts(PortletRequest request, boolean selectedPrivate)
 		throws SystemException {
 
+        PortletFinderCompanyConfiguration companyConfiguration;
+
 		boolean ignoreScopeGroupIdFlag = getIgnoreScopeGroupIdFlag(request);
+        try {
+            long companyId = ((ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY)).getCompanyId();
+            companyConfiguration = ConfigurationProviderUtil.getCompanyConfiguration(PortletFinderCompanyConfiguration.class, companyId);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        long companyId = themeDisplay.getCompanyId();
 		List<Layout> allLayouts = new LinkedList<Layout>();
 
-		if (ignoreScopeGroupIdFlag) {
-			allLayouts = LayoutLocalServiceUtil.getLayouts(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+		if (companyConfiguration.ignoreScopeGroupIdFlag()) {
+            List<Group> groups = GroupLocalServiceUtil.getGroups(companyId,
+                    GroupConstants.ANY_PARENT_GROUP_ID, true);
+            allLayouts = LayoutLocalServiceUtil.getLayouts(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+
+            if (companyConfiguration.restrictScopeToSitesAndControlPanel()){
+                // retain only the layouts belonging to a site and the control panel
+                allLayouts = allLayouts.stream()
+                    .filter(l -> groups.stream().anyMatch(g -> g.getGroupId() == l.getGroup().getGroupId()
+                            || StringUtil.equals(l.getType(), LayoutConstants.TYPE_CONTROL_PANEL)))
+                    .toList();
+            }
+
 		}
 		else {
+            // get layouts of current site
 			allLayouts = LayoutLocalServiceUtil.getLayouts(themeDisplay.getScopeGroupId(), selectedPrivate);
 		}
 
-		List<Layout> sortedLayouts = new ArrayList<Layout>(allLayouts);
+        List<Layout> sortedLayouts = new ArrayList<Layout>(allLayouts);
 		Collections.sort(sortedLayouts, LayoutComparator.getInstance(true));
 		request.setAttribute("allLayouts", sortedLayouts);
 		request.setAttribute("ignoreScopeGroupIdFlag", ignoreScopeGroupIdFlag);
