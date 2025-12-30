@@ -1,7 +1,10 @@
 package it.torkin.optimus.portlet.finder.application.list;
 
 import java.util.Locale;
+import java.util.ResourceBundle;
 
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import org.osgi.service.component.annotations.Component;
 
 import com.liferay.application.list.BasePanelCategory;
@@ -29,7 +32,10 @@ public class PortletFinderPanelCategory extends BasePanelCategory {
 
 	@Override
 	public String getLabel(Locale locale) {
-		return PortletFinderPanelCategoryKeys.CONTROL_PANEL_CATEGORY;
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			"content.Language", locale, getClass());
+
+		return LanguageUtil.get(resourceBundle, "category.custom.label");
 	}
 
 }
