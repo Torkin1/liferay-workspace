@@ -9,6 +9,7 @@ import com.liferay.layout.page.template.service.LayoutPageTemplateStructureRelLo
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.NoSuchGroupException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -350,8 +351,15 @@ public class PortletFinderUtil implements Constants {
             if (companyConfiguration.restrictScopeToSitesAndControlPanel()){
                 // retain only the layouts belonging to a site and the control panel
                 allLayouts = allLayouts.stream()
-                    .filter(l -> groups.stream().anyMatch(g -> g.getGroupId() == l.getGroup().getGroupId()
-                            || StringUtil.equals(l.getType(), LayoutConstants.TYPE_CONTROL_PANEL)))
+                    .filter(l -> groups.stream().anyMatch(g -> {
+                        try {
+                            return g.getGroupId() == l.getGroup().getGroupId()
+								|| StringUtil.equals(l.getType(), LayoutConstants.TYPE_CONTROL_PANEL);
+                        } catch (Exception e) {
+							logger.error(e);
+                            return false;
+                        }
+                    }))
                     .toList();
             }
 
